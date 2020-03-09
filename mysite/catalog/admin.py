@@ -19,6 +19,7 @@ admin.site.register(Book)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'date_of_birth', 'date_of_death')
     fields = ['first_name', 'last_name', ('date_of_birth', 'date_of_death')]
+    inlines = [BooksInstanceInline]
 
 
 admin.site.register(Author, AuthorAdmin)
@@ -35,6 +36,7 @@ class BookInstanceAdmin(admin.ModelAdmin):
             'fields': ('status', 'due_back')
         }),
     )
+    list_display = ['book', 'status', 'due_back', 'id']
 
 
 admin.site.register(BookInstance)
