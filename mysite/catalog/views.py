@@ -22,6 +22,9 @@ def index(request):
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits + 1
+    # request.session.set_expiry(0)
+    # request.session.modified = True
+    # print(request.session.get_expire_at_browser_close())
 
     context = {
         'num_books': num_books,
