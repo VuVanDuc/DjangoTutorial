@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -6,8 +6,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 from catalog.forms import RenewBookForm
 from catalog.models import Book, BookInstance, Author
@@ -111,7 +112,7 @@ def renew_book_librarian(request, pk):
             book_instance.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('all-borrowed'))
+            return HttpResponseRedirect(reverse('librarian-borrowed'))
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -124,3 +125,40 @@ def renew_book_librarian(request, pk):
     }
 
     return render(request, 'catalog/book_renew_librarian.html', context)
+
+
+class AuthorCreate(PermissionRequiredMixin, CreateView):
+    model = Author
+    fields = '__all__'
+    initial = {'date_of_death': '05/01/2018'}
+    permission_required = 'catalog.can_mark_returned'
+
+
+class AuthorUpdate(PermissionRequiredMixin, UpdateView):
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+    permission_required = 'catalog.can_mark_returned'
+
+
+class AuthorDelete(PermissionRequiredMixin, DeleteView):
+    model = Author
+    success_url = reverse_lazy('authors')
+    permission_required = 'catalog.can_mark_returned'
+
+
+class BookCreate(PermissionRequiredMixin, CreateView):
+    model = Book
+    fields = '__all__'
+    permission_required = 'catalog.can_mark_returned'
+
+
+class BookUpdate(PermissionRequiredMixin, UpdateView):
+    model = Book
+    fields = '__all__'
+    permission_required = 'catalog.can_mark_returned'
+
+
+class BookDelete(PermissionRequiredMixin, DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
+    permission_required = 'catalog.can_mark_returned'
